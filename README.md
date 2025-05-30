@@ -4,7 +4,7 @@ Es enthält drei Bash-Skripte zur Durchführung von CPU-Stresstests mit Logging,
 
 ---
 
-## 📦 Voraussetzungen
+## 📦 Voraussetzungen (Siehe ## [Drittanbieter-Software](https://github.com/lastsamurai26/cpu-stress-suite/edit/main/README.md#drittanbieter-software) )
 
 Installiere die folgenden Pakete (Debian/Ubuntu):
 
@@ -81,6 +81,16 @@ Nur CPU-Stresstest für 12 Minuten plus 4 Minuten Abkühlung, Ausgabe als CSV un
 Achte darauf, deinen echten ntfy Token und Topic in cpu_stress_full_ntfy.sh einzutragen.
 Token niemals öffentlich im Internet freigeben!
 
+## Drittanbieter-Software
+
+Dieses Projekt nutzt folgende externe Programme, die separat installiert sein müssen:
+
+- [stress-ng](https://manpages.ubuntu.com/manpages/latest/man1/stress-ng.1.html) (GPLv2)
+- [gnuplot](http://www.gnuplot.info/) (GPL)
+- [ImageMagick](https://imagemagick.org/) (Apache 2.0)
+- [curl](https://curl.se/) (MIT)
+
+Diese Tools sind nicht Teil dieses Repositories und unterliegen jeweils eigenen Lizenzbedingungen.
 
 # Quellenverzeichnis für verwendete Tools
 
