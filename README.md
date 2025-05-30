@@ -1,6 +1,6 @@
 # 🔥 CPU Stress Test Suite für Raspberry Pi & Linux
 
-Dieses Repository enthält drei Bash-Skripte zur Durchführung von CPU-Stresstests mit Logging, Visualisierung und optionaler Benachrichtigung per [ntfy.sh](https://ntfy.sh).
+Es enthält drei Bash-Skripte zur Durchführung von CPU-Stresstests mit Logging, Visualisierung und optionaler Benachrichtigung per [ntfy.sh](https://ntfy.sh).
 
 ---
 
