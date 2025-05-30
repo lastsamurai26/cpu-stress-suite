@@ -1,6 +1,6 @@
 # Quellenverzeichnis für verwendete Tools
 
-In den folgenden Bash-Skripten werden verschiedene Open Source Tools genutzt. Die Skripte selbst wurden von mir entwickelt; die Funktionsweise orientiert sich an den Möglichkeiten und Schnittstellen dieser Programme:
+In den folgenden Bash-Skripten werden verschiedene Open Source Tools genutzt. Die Skripte selbst wurden von mir (lastsamurai26) entwickelt; die Funktionsweise orientiert sich an den Möglichkeiten und Schnittstellen dieser Programme:
 
 ## Verwendete Tools
 
