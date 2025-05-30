@@ -125,7 +125,6 @@ if $INCLUDE_PDF; then
     convert "$PLOTFILE" "$PDFFILE"
 fi
 
-if $DO_UPLOAD; then
     echo "Sende Benachrichtigung und Dateien an ntfy Server..."
 
     # Nachricht senden
@@ -135,6 +134,7 @@ if $DO_UPLOAD; then
          -H "Priority: 4" \
          -d "Stresstest: ${TIMEOUT_MINUTES} Min, Cooldown: ${COOL_DOWN_MINUTES} Min."
 
+if $DO_UPLOAD; then
     # Funktion für Datei-Upload via POST (mit Filename Header)
     upload_file() {
         local FILE=$1
