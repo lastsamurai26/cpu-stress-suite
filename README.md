@@ -1,16 +1,16 @@
-# CPU-Stresstest-Skripte
+# 🔥 CPU Stress Test Suite für Raspberry Pi & Linux
 
-Zwei Skripte zur Überwachung der CPU-Temperatur bei Belastung (Linux, z.B. Raspberry Pi):
-
-- `cpu_stress_full.sh`  
-  Mit ntfy Server Upload (Benachrichtigung + Dateien)  
-  - Benötigt `curl`, `stress-ng`, `gnuplot`, `imagemagick` (`convert` für PDF)
-
-- `cpu_stress_local.sh`  
-  Nur lokale Speicherung (CSV, PNG, optional PDF) ohne Upload  
-  - Benötigt `stress-ng`, `gnuplot`, `imagemagick` (optional für PDF)
+Dieses Repository enthält drei Bash-Skripte zur Durchführung von CPU-Stresstests mit Logging, Visualisierung und optionaler Benachrichtigung per [ntfy.sh](https://ntfy.sh).
 
 ---
+
+## 📦 Voraussetzungen
+
+Installiere die folgenden Pakete (Debian/Ubuntu):
+
+```bash
+sudo apt update
+sudo apt install stress-ng gnuplot imagemagick curl
 
 ## Nutzung
 
