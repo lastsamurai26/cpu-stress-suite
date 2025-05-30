@@ -29,7 +29,7 @@ sudo apt install stress-ng gnuplot imagemagick curl
 ## 🚀 Nutzung
 
 ```bash
-chmod +x cpu_stress_full.sh cpu_stress_local.sh
+chmod +x cpu_stress_full_ntfy.sh cpu_stress_local.sh cpu_stress_basic.sh
 ```
 
 ## Beispiele für die Skript-Ausführung:
