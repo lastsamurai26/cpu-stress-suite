@@ -1,30 +1,43 @@
 #!/bin/bash
 
 # cpu_stress_full_ntfy.sh
+# CPU-Stresstest mit Temperatur-Logging, PNG-Plot, optional PDF und Upload zu ntfy.
 
+# Standardwerte
 DEFAULT_TIMEOUT=20
 DEFAULT_COOLDOWN=5
+
+# ntfy-Konfiguration
 NTFY_SERVER="https://ntfy.sh/YOUR_TOPIC"
 NTFY_TOKEN="Bearer YOUR_AUTH_TOKEN"
 
+# Initialwerte
 TIMEOUT_MINUTES=$DEFAULT_TIMEOUT
 COOL_DOWN_MINUTES=$DEFAULT_COOLDOWN
 INCLUDE_PDF=false
 
-print_help() {
-    echo "Verwendung: $0 [--timeout=MIN] [--cooldown=MIN] [--pdf] [--help]"
-    echo "  --timeout=MIN     Dauer des Stresstests (Standard: $DEFAULT_TIMEOUT Minuten)"
-    echo "  --cooldown=MIN    Dauer der Abkühlphase (Standard: $DEFAULT_COOLDOWN Minuten)"
-    echo "  --pdf             PDF-Erstellung aktivieren"
-    echo "  --help            Diese Hilfe anzeigen"
-}
-
+# Parameter verarbeiten
 for ARG in "$@"; do
     case $ARG in
-        --timeout=*) TIMEOUT_MINUTES="${ARG#*=}" ;;
-        --cooldown=*) COOL_DOWN_MINUTES="${ARG#*=}" ;;
-        --pdf) INCLUDE_PDF=true ;;
-        --help) print_help; exit 0 ;;
+        --timeout=*)
+            VAL="${ARG#*=}"
+            [[ "$VAL" =~ ^[0-9]+$ ]] && TIMEOUT_MINUTES=$VAL
+            ;;
+        --cooldown=*)
+            VAL="${ARG#*=}"
+            [[ "$VAL" =~ ^[0-9]+$ ]] && COOL_DOWN_MINUTES=$VAL
+            ;;
+        --pdf)
+            INCLUDE_PDF=true
+            ;;
+        --help)
+            echo "===== Hilfe & Konfiguration ====="
+            echo "--timeout=N     Stresstestdauer (Minuten, Standard: $DEFAULT_TIMEOUT)"
+            echo "--cooldown=N    Abkühlzeit (Minuten, Standard: $DEFAULT_COOLDOWN)"
+            echo "--pdf           PDF aus PNG erzeugen"
+            echo "--help          Diese Hilfe anzeigen"
+            exit 0
+            ;;
     esac
 done
 
@@ -49,14 +62,13 @@ log_status() {
     FREQ=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)
     FREQ_MHZ=$((FREQ / 1000))
     CPU_USAGE=$(top -bn2 -d 0.2 | grep "Cpu(s)" | tail -n1 | awk '{print 100 - $8}')
-    TIME_NOW=$(date +%H:%M:%S)
-    echo "$TIME_NOW,$TEMP_C,$FREQ_MHZ,$CPU_USAGE,$PHASE" | tee -a "$LOGFILE"
+    echo "$(date +%H:%M:%S),$TEMP_C,$FREQ_MHZ,$CPU_USAGE,$PHASE" | tee -a "$LOGFILE"
 }
 
 echo "Starte in 1 Minute mit dem CPU-Stresstest..."
 for i in {1..3}; do log_status "Vorbereitung"; sleep 20; done
 
-echo "Starte CPU-Stresstest für $TIMEOUT_MINUTES Minuten..."
+echo "Stresstest läuft..."
 stress-ng -c 4 --timeout "${TIMEOUT_MINUTES}m" & STRESS_PID=$!
 SECONDS_ELAPSED=0
 while kill -0 $STRESS_PID 2>/dev/null && [ $SECONDS_ELAPSED -lt $TIMEOUT_SECONDS ]; do
@@ -66,7 +78,7 @@ while kill -0 $STRESS_PID 2>/dev/null && [ $SECONDS_ELAPSED -lt $TIMEOUT_SECONDS
 done
 wait $STRESS_PID
 
-echo "Abkühlung für $COOL_DOWN_MINUTES Minuten..."
+echo "Abkühlung..."
 SECONDS_ELAPSED=0
 while [ $SECONDS_ELAPSED -lt $COOL_DOWN_SECONDS ]; do
     log_status "Abkühlung"
@@ -98,27 +110,29 @@ plot \
     70 title "Grenze 70°C" with lines lc rgb "#888888" dashtype 2
 EOF
 
-$INCLUDE_PDF && convert "$PLOTFILE" "$PDFFILE"
+if $INCLUDE_PDF; then
+    convert "$PLOTFILE" "$PDFFILE"
+fi
 
-echo "Sende Nachricht via ntfy..."
+echo "Sende Benachrichtigung an ntfy..."
 curl -s -X POST "$NTFY_SERVER" \
      -H "Authorization: $NTFY_TOKEN" \
      -H "Title: CPU Stresstest abgeschlossen" \
-     -H "Priority: 4" \
-     -d "Stresstest: $TIMEOUT_MINUTES Min, Cooldown: $COOL_DOWN_MINUTES Min."
+     -d "Dauer: ${TIMEOUT_MINUTES} Min, Abkühlzeit: ${COOL_DOWN_MINUTES} Min."
 
 upload_file() {
-    FILE=$1
-    MIMETYPE=$2
+    FILE="$1"; TYPE="$2"
     curl -s -X POST "$NTFY_SERVER" \
          -H "Authorization: $NTFY_TOKEN" \
          -H "Title: Datei-Upload: $(basename "$FILE")" \
          -H "Filename: $(basename "$FILE")" \
-         -H "Content-Type: $MIMETYPE" \
+         -H "Content-Type: $TYPE" \
          --data-binary @"$FILE"
 }
+
 upload_file "$LOGFILE" "text/csv"
 upload_file "$PLOTFILE" "image/png"
-$INCLUDE_PDF && upload_file "$PDFFILE" "application/pdf"
+if $INCLUDE_PDF; then upload_file "$PDFFILE" "application/pdf"; fi
 
+echo "Diagramm gespeichert als $PLOTFILE"
 echo "Fertig."
