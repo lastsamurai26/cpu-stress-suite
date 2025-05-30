@@ -19,11 +19,11 @@ sudo apt install stress-ng gnuplot imagemagick curl
 
 ## 📂 Enthaltene Skripte
 
-| Skriptname                | Beschreibung                                         | ntfy Benachrichtigung | PDF Erstellung | Kommentar                      |
-| ------------------------- | ---------------------------------------------------- | --------------------- | -------------- | ------------------------------ |
-| `cpu_stress_full_ntfy.sh` | Vollversion mit ntfy-Upload & optional PDF           | Ja                    | Ja             | Nutzt ntfy zum Upload          |
-| `cpu_stress_local.sh`     | Lokale Ausführung ohne ntfy, aber mit optionalem PDF | Nein                  | Ja             | Nur lokale Ausgabe             |
-| `cpu_stress_basic.sh`     | Minimalversion ohne ntfy und PDF                     | Nein                  | Nein           | Nur CSV & PNG lokal, keine PDF |
+| Skriptname                | Beschreibung                                         | ntfy Benachrichtigung      | PDF Erstellung | Kommentar                      |
+| ------------------------- | ---------------------------------------------------- | -------------------------- | -------------- | ------------------------------ |
+| `cpu_stress_full_ntfy.sh` | Vollversion mit ntfy-Upload & optional PDF           | Ja (mit optionalen Upload) | Ja             | Nutzt ntfy zum Upload          |
+| `cpu_stress_local.sh`     | Lokale Ausführung ohne ntfy, aber mit optionalem PDF | Nein                       | Ja             | Nur lokale Ausgabe             |
+| `cpu_stress_basic.sh`     | Minimalversion ohne ntfy und PDF                     | Nein                       | Nein           | Nur CSV & PNG lokal, keine PDF |
 
 
 ## 🚀 Nutzung
@@ -35,7 +35,7 @@ chmod +x cpu_stress_full_ntfy.sh cpu_stress_local.sh cpu_stress_basic.sh
 ## Beispiele für die Skript-Ausführung:
 ** Vollversion mit ntfy-Benachrichtigung und PDF-Ausgabe: **
 ```bash
-./cpu_stress_full_ntfy.sh --timeout=15 --cooldown=5 --pdf
+./cpu_stress_full_ntfy.sh --timeout=15 --cooldown=5 --pdf --upload
 ```
 Startet einen 15-minütigen Stresstest, 5 Minuten Abkühlung, erzeugt PDF und sendet Ergebnisse an ntfy-Server.
 
@@ -62,12 +62,13 @@ Nur CPU-Stresstest für 12 Minuten plus 4 Minuten Abkühlung, Ausgabe als CSV un
 ## ⚙️ Skript-Parameter
 
 
-| Parameter              | Beschreibung                     |
-| ---------------------- | -------------------------------- |
-| `--timeout=<Minuten>`  | Dauer des CPU-Stresstests        |
-| `--cooldown=<Minuten>` | Dauer der Abkühlphase danach     |
-| `--pdf`                | PDF-Bericht erstellen (optional) |
-| `--help`               | Hilfe und Parameter anzeigen     |
+| Parameter              | Beschreibung                                      |
+| ---------------------- | ------------------------------------------------- |
+| `--timeout=<Minuten>`  | Dauer des CPU-Stresstests                         |
+| `--cooldown=<Minuten>` | Dauer der Abkühlphase danach                      |
+| `--pdf`                | PDF-Bericht erstellen (optional)                  |
+| `--upload`             | sendet das Ergeniss an NTFY Server (Default: Aus) |
+| `--help`               | Hilfe und Parameter anzeigen                      |
 
 ## 📋 Funktionsweise
 - Das Skript misst CPU-Temperatur, Frequenz und Auslastung während eines Stresstests.
