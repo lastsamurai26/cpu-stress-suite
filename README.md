@@ -4,7 +4,7 @@ Es enthält drei Bash-Skripte zur Durchführung von CPU-Stresstests mit Logging,
 
 ---
 
-## 📦 Voraussetzungen (Siehe ## [Drittanbieter-Software](https://github.com/lastsamurai26/cpu-stress-suite/edit/main/README.md#drittanbieter-software) )
+## 📦 Voraussetzungen (Siehe ## [Drittanbieter-Software](https://github.com/lastsamurai26/cpu-stress-suite?tab=readme-ov-file#drittanbieter-software) )
 
 Installiere die folgenden Pakete (Debian/Ubuntu):
 
