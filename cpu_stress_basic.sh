@@ -88,6 +88,5 @@ plot \
     70 title "Grenze 70°C" with lines lc rgb "#888888" dashtype 2
 EOF
 
-
 echo "Diagramm gespeichert als $PLOTFILE"
 echo "Fertig."

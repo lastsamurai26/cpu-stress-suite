@@ -20,20 +20,10 @@ DO_UPLOAD=false  # Neu: Upload standardmäßig aus
 # Argumente parsen
 for ARG in "$@"; do
     case $ARG in
-        --timeout=*)
-            VAL="${ARG#*=}"
-            [[ "$VAL" =~ ^[0-9]+$ ]] && TIMEOUT_MINUTES=$VAL
-            ;;
-        --cooldown=*)
-            VAL="${ARG#*=}"
-            [[ "$VAL" =~ ^[0-9]+$ ]] && COOL_DOWN_MINUTES=$VAL
-            ;;
-        --pdf)
-            INCLUDE_PDF=true
-            ;;
-        --upload)
-            DO_UPLOAD=true
-            ;;
+        --timeout=*) VAL="${ARG#*=}"; [[ "$VAL" =~ ^[0-9]+$ ]] && TIMEOUT_MINUTES=$VAL ;;
+        --cooldown=*) VAL="${ARG#*=}"; [[ "$VAL" =~ ^[0-9]+$ ]] && COOL_DOWN_MINUTES=$VAL ;;
+        --pdf) INCLUDE_PDF=true ;;
+        --upload) DO_UPLOAD=true ;;
         --help)
             echo "Usage: $0 [--timeout=MINUTES] [--cooldown=MINUTES] [--pdf] [--upload]"
             echo "  --timeout=MINUTES   Dauer des Stresstests in Minuten (Standard: $DEFAULT_TIMEOUT)"
@@ -54,7 +44,6 @@ echo "========================="
 
 TIMEOUT_SECONDS=$((TIMEOUT_MINUTES * 60))
 COOL_DOWN_SECONDS=$((COOL_DOWN_MINUTES * 60))
-
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 LOGFILE="cpu_temp_log_$TIMESTAMP.csv"
 PLOTFILE="cpu_temp_plot_$TIMESTAMP.png"
