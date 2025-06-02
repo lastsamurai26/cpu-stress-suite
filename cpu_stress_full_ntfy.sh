@@ -120,7 +120,9 @@ fi
     curl -s -X POST "$NTFY_SERVER" \
          -H "Authorization: $NTFY_TOKEN" \
          -H "Title: CPU Stresstest abgeschlossen" \
-         -H "Priority: 4" \
+         -H "Tags: chart" \
+         -H "Markdown" \
+         -H "Priority: 3" \
          -d "Stresstest: ${TIMEOUT_MINUTES} Min, Cooldown: ${COOL_DOWN_MINUTES} Min."
 
 if $DO_UPLOAD; then
