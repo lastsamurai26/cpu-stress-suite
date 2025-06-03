@@ -5,25 +5,32 @@
 
 DEFAULT_TIMEOUT=20
 DEFAULT_COOLDOWN=5
+DEFAULT_PREPARE=1
+
 TIMEOUT_MINUTES=$DEFAULT_TIMEOUT
 COOL_DOWN_MINUTES=$DEFAULT_COOLDOWN
+PREPARE_MINUTES=$DEFAULT_PREPARE
 INCLUDE_PDF=false
 
 for ARG in "$@"; do
     case $ARG in
+        --prepare=*) VAL="${ARG#*=}"; [[ "$VAL" =~ ^[0-9]+$ ]] && PREPARE_MINUTES=$VAL ;;
         --timeout=*) VAL="${ARG#*=}"; [[ "$VAL" =~ ^[0-9]+$ ]] && TIMEOUT_MINUTES=$VAL ;;
         --cooldown=*) VAL="${ARG#*=}"; [[ "$VAL" =~ ^[0-9]+$ ]] && COOL_DOWN_MINUTES=$VAL ;;
         --pdf) INCLUDE_PDF=true ;;
         --help)
-            echo "--timeout=N     Dauer Stresstest"
-            echo "--cooldown=N    Dauer Abkühlung"
-            echo "--pdf           PDF-Erzeugung aktivieren"
+            echo "Usage: $0 [--timeout=MINUTES] [--cooldown=MINUTES] [--prepare=MINUTES] [--pdf]"
+            echo "  --prepare=N   Vorbereitungszeit vor Test (Standard: $DEFAULT_PREPARE)"
+            echo "  --timeout=N     Dauer Stresstest (Standard: $DEFAULT_TIMEOUT)"
+            echo "  --cooldown=N    Dauer Abkühlung (Standard: $DEFAULT_COOLDOWN)"
+            echo "  --pdf           PDF-Erzeugung aktivieren"
             exit 0
             ;;
     esac
 done
 
 echo "===== Konfiguration ====="
+echo "Vorbereitungszeit = ${PREPARE_MINUTES} Minute(n) (--prepare=)"
 echo "Stresstestzeit = $TIMEOUT_MINUTES Minuten"
 echo "Abkühlzeit     = $COOL_DOWN_MINUTES Minuten"
 echo "PDF-Erstellung = $( [ "$INCLUDE_PDF" = true ] && echo aktiviert || echo deaktiviert )"
@@ -31,10 +38,12 @@ echo "========================="
 
 TIMEOUT_SECONDS=$((TIMEOUT_MINUTES * 60))
 COOL_DOWN_SECONDS=$((COOL_DOWN_MINUTES * 60))
+PREPARE_SECONDS=$((PREPARE_MINUTES * 60))
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-LOGFILE="cpu_temp_log_$TIMESTAMP.csv"
-PLOTFILE="cpu_temp_plot_$TIMESTAMP.png"
-PDFFILE="cpu_temp_report_$TIMESTAMP.pdf"
+WORKDIR=$(pwd)
+LOGFILE=$(realpath "cpu_temp_log_$TIMESTAMP.csv")
+PLOTFILE=$(realpath "cpu_temp_plot_$TIMESTAMP.png")
+PDFFILE=$(realpath "cpu_temp_report_$TIMESTAMP.pdf")
 
 echo "Zeit,Temperatur (°C),Frequenz (MHz),CPU-Last (%),Phase" > "$LOGFILE"
 
@@ -47,8 +56,13 @@ log_status() {
     echo "$(date +%H:%M:%S),$TEMP_C,$FREQ_MHZ,$CPU_USAGE,$PHASE" | tee -a "$LOGFILE"
 }
 
-echo "Starte in 1 Minute mit dem CPU-Stresstest..."
-for i in {1..3}; do log_status "Vorbereitung"; sleep 20; done
+echo "Starte in $PREPARE_MINUTES Minute(n) mit dem CPU-Stresstest..."
+SECONDS_ELAPSED=0
+while [ $SECONDS_ELAPSED -lt $PREPARE_SECONDS ]; do
+    log_status "Vorbereitung"
+    sleep 20
+    SECONDS_ELAPSED=$((SECONDS_ELAPSED + 20))
+done
 
 echo "Stresstest läuft..."
 stress-ng -c 4 --timeout "${TIMEOUT_MINUTES}m" & STRESS_PID=$!
@@ -79,7 +93,7 @@ set timefmt "%H:%M:%S"
 set format x "%H:%M"
 set xlabel "Zeit"
 set ylabel "Temperatur (°C)"
-set yrange [0:90]
+set yrange [0:100]
 set y2label "CPU-Last (%) / Frequenz (MHz)"
 set y2tics
 set grid
@@ -96,5 +110,10 @@ if $INCLUDE_PDF; then
     convert "$PLOTFILE" "$PDFFILE"
 fi
 
-echo "Diagramm gespeichert als $PLOTFILE"
+echo "Diagramm gespeichert unter: $PLOTFILE"
+echo "CSV-Log gespeichert unter: $LOGFILE"
+if $INCLUDE_PDF; then
+    echo "PDF-Bericht gespeichert unter: $PDFFILE"
+fi
+
 echo "Fertig."

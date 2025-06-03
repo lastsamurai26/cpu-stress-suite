@@ -64,6 +64,7 @@ Nur CPU-Stresstest für 12 Minuten plus 4 Minuten Abkühlung, Ausgabe als CSV un
 
 | Parameter              | Beschreibung                                      |
 | ---------------------- | ------------------------------------------------- |
+| `--prepare=<Minuten>`  | Dauer der Vorbereitungszeit                       |
 | `--timeout=<Minuten>`  | Dauer des CPU-Stresstests                         |
 | `--cooldown=<Minuten>` | Dauer der Abkühlphase danach                      |
 | `--pdf`                | PDF-Bericht erstellen (optional)                  |
