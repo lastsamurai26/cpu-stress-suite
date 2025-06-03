@@ -109,6 +109,7 @@ set format x "%H:%M"
 set xlabel "Zeit"
 set ylabel "Temperatur (°C)"
 set yrange [0:100]
+set ytics 10
 set y2label "CPU-Last (%) / Frequenz (MHz)"
 set y2tics
 set grid
