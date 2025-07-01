@@ -29,8 +29,8 @@ done
 
 echo "===== Konfiguration ====="
 echo "Vorbereitungszeit = ${PREPARE_MINUTES} Minute(n) (--prepare=)"
-echo "Stresstestzeit = $TIMEOUT_MINUTES Minuten"
-echo "Abkühlzeit     = $COOL_DOWN_MINUTES Minuten"
+echo "Stresstestzeit = $TIMEOUT_MINUTES Minuten (--timeout=)"
+echo "Abkühlzeit     = $COOL_DOWN_MINUTES Minuten (--cooldown=)"
 echo "========================="
 
 TIMEOUT_SECONDS=$((TIMEOUT_MINUTES * 60))
@@ -45,9 +45,20 @@ echo "Zeit,Temperatur (°C),Frequenz (MHz),CPU-Last (%),Phase" > "$LOGFILE"
 
 log_status() {
     PHASE=$1
-    TEMP_C=$(vcgencmd measure_temp | grep -oP '[0-9.]+')
+    # read temperatur
+        # Temperatur auslesen mit Fallback
+    if command -v vcgencmd >/dev/null 2>&1; then
+        TEMP_C=$(vcgencmd measure_temp | grep -oP '[0-9.]+')
+    elif [ -f /sys/class/thermal/thermal_zone0/temp ]; then
+        TEMP_RAW=$(cat /sys/class/thermal/thermal_zone0/temp)
+        TEMP_C=$(echo "scale=1; $TEMP_RAW / 1000" | bc)
+    else
+        TEMP_C="N/A"
+    fi
+    # read frequency
     FREQ=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)
     FREQ_MHZ=$((FREQ / 1000))
+    # read CPU useage
     CPU_USAGE=$(top -bn2 -d 0.2 | grep "Cpu(s)" | tail -n1 | awk '{print 100 - $8}')
     echo "$(date +%H:%M:%S),$TEMP_C,$FREQ_MHZ,$CPU_USAGE,$PHASE" | tee -a "$LOGFILE"
 }
