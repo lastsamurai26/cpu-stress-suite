@@ -31,6 +31,7 @@ sudo apt install stress-ng gnuplot imagemagick curl
 ```bash
 chmod +x cpu_stress_full_ntfy.sh cpu_stress_local.sh cpu_stress_basic.sh
 ```
+In der "cpu_stress_full_ntfy.sh" bitte die NTFY URL und NTFY Token anpassen 
 
 ## Beispiele für die Skript-Ausführung:
 ** Vollversion mit ntfy-Benachrichtigung und PDF-Ausgabe: **
